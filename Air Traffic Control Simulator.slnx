@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Air Traffic Control Simulator/Air Traffic Control Simulator.vcxproj" />
+  <Project Path="Air Traffic Control Simulator/Air Traffic Control Simulator.vcxproj" Id="b2fc59e0-c503-4905-9207-4562003a612b" />
 </Solution>
