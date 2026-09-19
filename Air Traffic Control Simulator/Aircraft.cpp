@@ -4,11 +4,23 @@
 #include <iostream>
 #include <numbers>
 
+Aircraft::Aircraft() : label(font) {
+	if (!font.openFromFile("GeistMono-Regular.ttf"))
+	{
+		std::cout << "Font sa nepodarilo nacitat!\n";
+	}
 
+	
+	label.setCharacterSize(15);
+	speedText.setCharacterSize(12);
+	headingText.setCharacterSize(12);
+
+	label.setString(callsign);
+}
 
 void Aircraft::update(float deltaTime) {
 
-	
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
 		heading -= turnSpeed * deltaTime;
@@ -30,16 +42,57 @@ void Aircraft::update(float deltaTime) {
 		}
 	}
 
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+	{
+		speed += acceleration * deltaTime;
+
+		if (speed >= maxSpeed)
+		{
+			speed = maxSpeed;
+		}
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+	{
+		speed -= acceleration * deltaTime;
+
+		if (speed <= 0.f)
+		{
+			speed = 0.f;
+		}
+	}
+
 	float radians = heading * std::numbers::pi_v<float> / 180.f;
 
 	sf::Vector2f direction(std::sin(radians), -std::cos(radians));
 	position += direction * speed * deltaTime;
+
+	speedText.setString("SPD: " + std::to_string(static_cast<int>(speed)));
+	headingText.setString("HDG: " + std::to_string(static_cast<int>(heading)));
 
 	std::cout << "\rheading: " << heading << "    speed: " << speed << std::flush;
 }
 
 void Aircraft::draw(sf::RenderWindow& window) {
 	shapeAircraft.setPosition(position);
+	label.setPosition(position + textOffset);
+	speedText.setPosition(position + speedOffset);
+	headingText.setPosition(position + headingOffset);
+
 	shapeAircraft.setFillColor(sf::Color::White);
+
 	window.draw(shapeAircraft);
+	window.draw(label);
+	window.draw(speedText);
+	window.draw(headingText);
+}
+
+float Aircraft::getSpeed()
+{
+	return speed;
+}
+
+float Aircraft::getHeading()
+{
+	return heading;
 }

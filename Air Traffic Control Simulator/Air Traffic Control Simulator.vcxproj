@@ -151,6 +151,9 @@
   <ItemGroup>
     <ClInclude Include="Aircraft.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\..\..\Skola\Web\Hlavny web\FONTS\GeistMono-Regular.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

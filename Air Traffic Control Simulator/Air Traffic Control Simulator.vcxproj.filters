@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{897c1495-863a-4906-ae06-28216aad139d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -26,5 +29,10 @@
     <ClInclude Include="Aircraft.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\..\..\..\Skola\Web\Hlavny web\FONTS\GeistMono-Regular.ttf">
+      <Filter>assets</Filter>
+    </Font>
   </ItemGroup>
 </Project>

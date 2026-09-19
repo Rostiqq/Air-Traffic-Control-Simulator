@@ -23,6 +23,7 @@ int main() {
 			if (event->is<sf::Event::Closed>())
 				window.close();
 		}
+		
 		window.clear(sf::Color(10, 15, 25));
 
 		aircraft.update(deltaTime);
