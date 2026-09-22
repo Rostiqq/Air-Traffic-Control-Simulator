@@ -6,7 +6,7 @@
 class Aircraft
 {
 public:
-	Aircraft();
+	Aircraft(const std::string& newCallsign,sf::Vector2f position);
 	
 	void update(float deltaTime);
 	void draw(sf::RenderWindow& window);
@@ -14,7 +14,7 @@ public:
 	float getSpeed();
 	float getHeading();
 
-	
+	bool isClicked(sf::Vector2i mousePosition);
 
 private:
 	float speed = 50.f;
@@ -22,7 +22,6 @@ private:
 	float turnSpeed = 60.f;
 	float acceleration = 30.f;
 	float maxSpeed = 200.f;
-	float deltaSpeed = 0.f;
 
 	std::string callsign = "NO123";
 

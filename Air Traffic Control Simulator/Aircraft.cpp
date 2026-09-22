@@ -2,9 +2,10 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cmath>
 #include <numbers>
 
-Aircraft::Aircraft() : label(font) {
+Aircraft::Aircraft(const std::string& newCallsign,sf::Vector2f position) : label(font) {
 	if (!font.openFromFile("GeistMono-Regular.ttf"))
 	{
 		std::cout << "Font sa nepodarilo nacitat!\n";
@@ -15,7 +16,10 @@ Aircraft::Aircraft() : label(font) {
 	speedText.setCharacterSize(12);
 	headingText.setCharacterSize(12);
 
-	label.setString(callsign);
+	this->callsign = newCallsign;
+	label.setString(newCallsign);
+	
+	this->position = position;
 }
 
 void Aircraft::update(float deltaTime) {
@@ -95,4 +99,12 @@ float Aircraft::getSpeed()
 float Aircraft::getHeading()
 {
 	return heading;
+}
+
+bool Aircraft::isClicked(sf::Vector2i mousePosition) {
+	float dx = mousePosition.x - position.x;
+	float dy = mousePosition.y - position.y;
+	float different = sqrt(dx * dx + dy * dy);
+	
+	return different <= 10.f;
 }
