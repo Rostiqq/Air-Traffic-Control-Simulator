@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include "Aircraft.hpp"
+#include "Airport.hpp"
 
 int main() {
 
@@ -17,6 +18,8 @@ int main() {
 	aircrafts.emplace_back("NO123", sf::Vector2f{ 800.f,200.f });
 	aircrafts.emplace_back("BA875", sf::Vector2f{ 1000.f,600.f });
 	int selectedAircraft = 0;
+
+	Airport airport;
 
 	while (window.isOpen())
 	{
@@ -55,7 +58,8 @@ int main() {
 
 			aircrafts[i].draw(window);
 		}
-		
+		airport.drawAirport(window);
+
 		window.display();
 	}
 

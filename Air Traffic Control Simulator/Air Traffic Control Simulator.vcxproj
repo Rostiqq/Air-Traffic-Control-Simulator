@@ -146,10 +146,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Aircraft.cpp" />
+    <ClCompile Include="Airport.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Aircraft.hpp" />
+    <ClInclude Include="Airport.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\..\..\Skola\Web\Hlavny web\FONTS\GeistMono-Regular.ttf" />
