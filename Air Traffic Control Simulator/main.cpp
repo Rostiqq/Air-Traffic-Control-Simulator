@@ -17,6 +17,10 @@ int main() {
 	aircrafts.emplace_back("MA345", sf::Vector2f{ 300.f,400.f });
 	aircrafts.emplace_back("NO123", sf::Vector2f{ 800.f,200.f });
 	aircrafts.emplace_back("BA875", sf::Vector2f{ 1000.f,600.f });
+
+	aircrafts[0].setDestination("LZIB");
+	aircrafts[2].setDestination("LZTD");
+
 	int selectedAircraft = 0;
 
 	Airport airport;

@@ -35,3 +35,4 @@ void Airport::drawAirport(sf::RenderWindow& window) {
 	window.draw(label);
 	window.draw(runwayLabel);
 }
+

@@ -10,6 +10,7 @@ public:
 	
 	void update(float deltaTime);
 	void draw(sf::RenderWindow& window);
+	void setDestination(const std::string& newDestination);
 
 	float getSpeed();
 	float getHeading();
@@ -24,6 +25,7 @@ private:
 	float maxSpeed = 200.f;
 
 	std::string callsign = "NO123";
+	std::string destination = "";
 
 	sf::Vector2f position{600.f,400.f};
 	sf::CircleShape shapeAircraft{3.f};
@@ -33,10 +35,12 @@ private:
 	sf::Text label{font};
 	sf::Text speedText{font};
 	sf::Text headingText{font};
+	sf::Text destinationText{ font };
 
 	sf::Vector2f textOffset{ -20.f, -55.f };
 	sf::Vector2f speedOffset = { -25.f, -38.f };
 	sf::Vector2f headingOffset = { -25.f, -21.f };
+	sf::Vector2f destinationOffset = { -25.f,10.f };
 
 };
 

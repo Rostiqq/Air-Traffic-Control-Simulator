@@ -15,10 +15,10 @@ Aircraft::Aircraft(const std::string& newCallsign,sf::Vector2f position) : label
 	label.setCharacterSize(15);
 	speedText.setCharacterSize(12);
 	headingText.setCharacterSize(12);
+	destinationText.setCharacterSize(10);
 
 	this->callsign = newCallsign;
 	label.setString(newCallsign);
-	
 	this->position = position;
 }
 
@@ -82,6 +82,7 @@ void Aircraft::draw(sf::RenderWindow& window) {
 	label.setPosition(position + textOffset);
 	speedText.setPosition(position + speedOffset);
 	headingText.setPosition(position + headingOffset);
+	destinationText.setPosition(position + destinationOffset);
 
 	shapeAircraft.setFillColor(sf::Color::White);
 
@@ -89,6 +90,12 @@ void Aircraft::draw(sf::RenderWindow& window) {
 	window.draw(label);
 	window.draw(speedText);
 	window.draw(headingText);
+	window.draw(destinationText);
+}
+
+void Aircraft::setDestination(const std::string& newDestination) {
+	destination = newDestination;
+	destinationText.setString("DEST: " + destination);
 }
 
 float Aircraft::getSpeed()
@@ -108,3 +115,4 @@ bool Aircraft::isClicked(sf::Vector2i mousePosition) {
 	
 	return different <= 10.f;
 }
+
