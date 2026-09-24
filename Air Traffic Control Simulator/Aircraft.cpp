@@ -22,49 +22,41 @@ Aircraft::Aircraft(const std::string& newCallsign,sf::Vector2f position) : label
 	this->position = position;
 }
 
-void Aircraft::update(float deltaTime) {
+void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
 
+	sf::Vector2f directionToTarget = getDirectionTo(airportPosition);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+	float angle = std::atan2(directionToTarget.x, -directionToTarget.y);
+	float targetHeading = angle * 180.f / std::numbers::pi_v<float>;
+
+	if (targetHeading < 0.f)
+		targetHeading += 360.f;
+
+	float currentHeading = getHeading();
+	float difference = targetHeading - currentHeading;
+
+	if (difference > 180.f)
+		difference -= 360.f;
+
+	if (difference < -180.f)
+		difference += 360.f;
+
+	if (difference > 0)
+		heading += turnSpeed * deltaTime;
+	else if (difference < 0)
 	{
 		heading -= turnSpeed * deltaTime;
-
-		if (heading <= 0.f)
-		{
-			heading += 360.f;
-		}
-
 	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+	
+	if (heading >= 360.f)
 	{
-		heading += turnSpeed * deltaTime;
-
-		if (heading >= 360.f)
-		{
-			heading -= 360.f;
-		}
+		heading -= 360.f;
 	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+	else if (heading < 0.f)
 	{
-		speed += acceleration * deltaTime;
-
-		if (speed >= maxSpeed)
-		{
-			speed = maxSpeed;
-		}
+		heading += 360.f;
 	}
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-	{
-		speed -= acceleration * deltaTime;
-
-		if (speed <= 0.f)
-		{
-			speed = 0.f;
-		}
-	}
 
 	float radians = heading * std::numbers::pi_v<float> / 180.f;
 
@@ -73,8 +65,6 @@ void Aircraft::update(float deltaTime) {
 
 	speedText.setString("SPD: " + std::to_string(static_cast<int>(speed)));
 	headingText.setString("HDG: " + std::to_string(static_cast<int>(heading)));
-
-	std::cout << "\rheading: " << heading << "    speed: " << speed << std::flush;
 }
 
 void Aircraft::draw(sf::RenderWindow& window) {
@@ -116,3 +106,8 @@ bool Aircraft::isClicked(sf::Vector2i mousePosition) {
 	return different <= 10.f;
 }
 
+
+sf::Vector2f Aircraft::getDirectionTo(sf::Vector2f targetPosition) {
+	sf::Vector2f direction = targetPosition - position;
+	return direction;
+}

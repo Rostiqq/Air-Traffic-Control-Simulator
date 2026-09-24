@@ -11,8 +11,9 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode({ 1200, 800 }), "ATC Simulator", sf::Style::Titlebar);
 	sf::Clock clock;
 	sf::Vector2i mousePosition;
-
 	std::vector<Aircraft> aircrafts;
+	Airport airport;
+
 	aircrafts.reserve(3);
 	aircrafts.emplace_back("MA345", sf::Vector2f{ 300.f,400.f });
 	aircrafts.emplace_back("NO123", sf::Vector2f{ 800.f,200.f });
@@ -23,7 +24,6 @@ int main() {
 
 	int selectedAircraft = 0;
 
-	Airport airport;
 
 	while (window.isOpen())
 	{
@@ -45,6 +45,7 @@ int main() {
 		
 		window.clear(sf::Color(10, 15, 25));
 
+		
 		for (int i = 0; i < aircrafts.size(); i++)
 		{
 			if (aircrafts[i].isClicked(mousePosition))
@@ -57,7 +58,7 @@ int main() {
 		{
 			if (i == selectedAircraft)
 			{
-				aircrafts[i].update(deltaTime);
+				aircrafts[i].update(deltaTime,airport.getPosition());
 			}
 
 			aircrafts[i].draw(window);

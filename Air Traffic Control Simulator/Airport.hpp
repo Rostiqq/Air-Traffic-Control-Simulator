@@ -6,6 +6,7 @@ class Airport
 {
 public:
 	void drawAirport(sf::RenderWindow& window);
+	sf::Vector2f getPosition();
 	Airport();
 
 private:

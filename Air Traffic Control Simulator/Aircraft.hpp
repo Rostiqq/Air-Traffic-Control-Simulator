@@ -8,7 +8,7 @@ class Aircraft
 public:
 	Aircraft(const std::string& newCallsign,sf::Vector2f position);
 	
-	void update(float deltaTime);
+	void update(float deltaTime, sf::Vector2f targetPosition);
 	void draw(sf::RenderWindow& window);
 	void setDestination(const std::string& newDestination);
 
@@ -16,6 +16,8 @@ public:
 	float getHeading();
 
 	bool isClicked(sf::Vector2i mousePosition);
+
+	sf::Vector2f getDirectionTo(sf::Vector2f targetPosition);
 
 private:
 	float speed = 50.f;

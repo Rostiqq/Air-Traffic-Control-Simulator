@@ -36,3 +36,7 @@ void Airport::drawAirport(sf::RenderWindow& window) {
 	window.draw(runwayLabel);
 }
 
+
+sf::Vector2f Airport::getPosition() {
+	return airportPosition;
+}
