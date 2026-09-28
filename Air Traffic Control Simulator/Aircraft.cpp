@@ -58,6 +58,11 @@ void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
 	}
 
 
+	if (isNear(airportPosition))
+	{
+		speed = 0.f;
+	}
+
 	float radians = heading * std::numbers::pi_v<float> / 180.f;
 
 	sf::Vector2f direction(std::sin(radians), -std::cos(radians));
@@ -106,8 +111,24 @@ bool Aircraft::isClicked(sf::Vector2i mousePosition) {
 	return different <= 10.f;
 }
 
+bool Aircraft::isNear(sf::Vector2f targetPosition)
+{
+	sf::Vector2f direction = targetPosition - position;
+
+	float distance = std::sqrt(
+		direction.x * direction.x +
+		direction.y * direction.y
+	);
+
+	return distance < 50.f;
+}
+
 
 sf::Vector2f Aircraft::getDirectionTo(sf::Vector2f targetPosition) {
 	sf::Vector2f direction = targetPosition - position;
 	return direction;
+}
+
+std::string Aircraft::getDestination() {
+	return destination;
 }

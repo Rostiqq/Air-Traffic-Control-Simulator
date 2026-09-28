@@ -5,9 +5,11 @@
 class Airport
 {
 public:
+	Airport(std::string airportNewCode, sf::Vector2f position);
+	
 	void drawAirport(sf::RenderWindow& window);
+
 	sf::Vector2f getPosition();
-	Airport();
 
 private:
 	std::string airportCode = "LZIB";

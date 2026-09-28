@@ -11,16 +11,19 @@ int main() {
 	sf::RenderWindow window(sf::VideoMode({ 1200, 800 }), "ATC Simulator", sf::Style::Titlebar);
 	sf::Clock clock;
 	sf::Vector2i mousePosition;
-	std::vector<Aircraft> aircrafts;
-	Airport airport;
 
+	std::vector<Aircraft> aircrafts;
+	Airport airport1("LZIB", { 200.f,600.f });
+	Airport airport2("LZIT", { 900.f,150.f });
+ 
 	aircrafts.reserve(3);
 	aircrafts.emplace_back("MA345", sf::Vector2f{ 300.f,400.f });
 	aircrafts.emplace_back("NO123", sf::Vector2f{ 800.f,200.f });
 	aircrafts.emplace_back("BA875", sf::Vector2f{ 1000.f,600.f });
 
 	aircrafts[0].setDestination("LZIB");
-	aircrafts[2].setDestination("LZTD");
+	aircrafts[1].setDestination("");
+	aircrafts[2].setDestination("LZIT");
 
 	int selectedAircraft = 0;
 
@@ -58,12 +61,20 @@ int main() {
 		{
 			if (i == selectedAircraft)
 			{
-				aircrafts[i].update(deltaTime,airport.getPosition());
+				if (aircrafts[i].getDestination() == "LZIB")
+				{
+					aircrafts[i].update(deltaTime, airport1.getPosition());
+				}
+				else if (aircrafts[i].getDestination() == "LZIT")
+				{
+					aircrafts[i].update(deltaTime, airport2.getPosition());
+				}
 			}
 
 			aircrafts[i].draw(window);
 		}
-		airport.drawAirport(window);
+		airport1.drawAirport(window);
+		airport2.drawAirport(window);
 
 		window.display();
 	}

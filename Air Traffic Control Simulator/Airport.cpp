@@ -1,15 +1,19 @@
 #include "Airport.hpp"
 #include <iostream>
 
-Airport::Airport() {
+Airport::Airport(std::string airportNewCode, sf::Vector2f Position) {
 
 	if (!font.openFromFile("GeistMono-Regular.ttf"))
 	{
 		std::cout << "Nepodarilo sa nacitat font.\n";
 	}
 
+	this->airportPosition = Position;
+	this->airportCode = airportNewCode;
+	this->runwayPosition = airportPosition + sf::Vector2f{ 36.f,0.f };
+	
+	label.setString(airportNewCode);
 	label.setCharacterSize(15);
-	label.setString(airportCode);
 	runwayLabel.setCharacterSize(10);
 	runwayLabel.setString(runwayNumber);
 }
@@ -40,3 +44,4 @@ void Airport::drawAirport(sf::RenderWindow& window) {
 sf::Vector2f Airport::getPosition() {
 	return airportPosition;
 }
+

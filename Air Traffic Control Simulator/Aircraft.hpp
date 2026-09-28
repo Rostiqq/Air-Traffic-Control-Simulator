@@ -14,8 +14,11 @@ public:
 
 	float getSpeed();
 	float getHeading();
-
+	
 	bool isClicked(sf::Vector2i mousePosition);
+	bool isNear(sf::Vector2f targetPosition);
+
+	std::string getDestination();
 
 	sf::Vector2f getDirectionTo(sf::Vector2f targetPosition);
 
