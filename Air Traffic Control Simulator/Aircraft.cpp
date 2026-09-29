@@ -16,6 +16,7 @@ Aircraft::Aircraft(const std::string& newCallsign,sf::Vector2f position) : label
 	speedText.setCharacterSize(12);
 	headingText.setCharacterSize(12);
 	destinationText.setCharacterSize(10);
+	stateText.setCharacterSize(10);
 
 	this->callsign = newCallsign;
 	label.setString(newCallsign);
@@ -23,7 +24,12 @@ Aircraft::Aircraft(const std::string& newCallsign,sf::Vector2f position) : label
 }
 
 void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
-
+	if (state == AircraftState::Landed)
+	{
+		return;
+	}
+	
+	
 	sf::Vector2f directionToTarget = getDirectionTo(airportPosition);
 
 	float angle = std::atan2(directionToTarget.x, -directionToTarget.y);
@@ -60,7 +66,7 @@ void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
 
 	if (isNear(airportPosition))
 	{
-		speed = 0.f;
+		state = AircraftState::Landing;
 	}
 
 	float radians = heading * std::numbers::pi_v<float> / 180.f;
@@ -70,6 +76,27 @@ void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
 
 	speedText.setString("SPD: " + std::to_string(static_cast<int>(speed)));
 	headingText.setString("HDG: " + std::to_string(static_cast<int>(heading)));
+	
+	
+	if (state == AircraftState::Flying)
+	{
+		stateText.setString("STATE: FLYING");
+	}
+	else if (state == AircraftState::Landing)
+	{
+		speed -= acceleration * deltaTime;
+		if (speed <= 0.f)
+		{
+			speed = 0;
+			state = AircraftState::Landed;
+			stateText.setString("STATE: LANDED");
+		}
+		else
+		{
+			stateText.setString("STATE: LANDING");
+		}
+
+	}
 }
 
 void Aircraft::draw(sf::RenderWindow& window) {
@@ -78,6 +105,7 @@ void Aircraft::draw(sf::RenderWindow& window) {
 	speedText.setPosition(position + speedOffset);
 	headingText.setPosition(position + headingOffset);
 	destinationText.setPosition(position + destinationOffset);
+	stateText.setPosition(position + stateOffset);
 
 	shapeAircraft.setFillColor(sf::Color::White);
 
@@ -86,6 +114,7 @@ void Aircraft::draw(sf::RenderWindow& window) {
 	window.draw(speedText);
 	window.draw(headingText);
 	window.draw(destinationText);
+	window.draw(stateText);
 }
 
 void Aircraft::setDestination(const std::string& newDestination) {
@@ -120,7 +149,7 @@ bool Aircraft::isNear(sf::Vector2f targetPosition)
 		direction.y * direction.y
 	);
 
-	return distance < 50.f;
+	return distance < 100.f;
 }
 
 
