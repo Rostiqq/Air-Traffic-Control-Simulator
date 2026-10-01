@@ -23,21 +23,55 @@ Aircraft::Aircraft(const std::string& newCallsign,sf::Vector2f position) : label
 	this->position = position;
 }
 
-void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
+void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCenter) 
+{
+	float targetHeading = 0.f;
 	if (state == AircraftState::Landed)
 	{
 		return;
 	}
 	
-	
-	sf::Vector2f directionToTarget = getDirectionTo(airportPosition);
+	if (state == AircraftState::Flying && isNear(runwayCenter))
+	{
+		state = AircraftState::Landing;
+		landingStartSpeed = speed;
+		landingStartDistance = getDistanceTo(runwayCenter);
+	}
+
+
+	sf::Vector2f directionToTarget = getDirectionTo(runwayCenter);
 
 	float angle = std::atan2(directionToTarget.x, -directionToTarget.y);
-	float targetHeading = angle * 180.f / std::numbers::pi_v<float>;
+	targetHeading = angle * 180.f / std::numbers::pi_v<float>;
 
 	if (targetHeading < 0.f)
 		targetHeading += 360.f;
+	if (state == AircraftState::Flying)
+	{
+		stateText.setString("STATE: FLYING");
+	}
+	else if (state == AircraftState::Landing)
+	{
+		float distance = getDistanceTo(runwayCenter);
+		float ratio = distance / landingStartDistance;
+		speed = landingStartSpeed * ratio;
 
+		const float minSpeed = 2.f;
+		if (speed < minSpeed && distance > 5.f)
+			speed = minSpeed;
+
+		if (distance < 1.f || distance <= speed * deltaTime)
+		{
+			position = runwayCenter;
+			speed = 0.f;
+			state = AircraftState::Landed;
+			stateText.setString("STATE: LANDED");
+		}
+		else
+		{
+			stateText.setString("STATE: LANDING");
+		}
+	}
 	float currentHeading = getHeading();
 	float difference = targetHeading - currentHeading;
 
@@ -46,6 +80,9 @@ void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
 
 	if (difference < -180.f)
 		difference += 360.f;
+
+
+
 
 	if (difference > 0)
 		heading += turnSpeed * deltaTime;
@@ -63,12 +100,6 @@ void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
 		heading += 360.f;
 	}
 
-
-	if (isNear(airportPosition))
-	{
-		state = AircraftState::Landing;
-	}
-
 	float radians = heading * std::numbers::pi_v<float> / 180.f;
 
 	sf::Vector2f direction(std::sin(radians), -std::cos(radians));
@@ -77,26 +108,6 @@ void Aircraft::update(float deltaTime,sf::Vector2f airportPosition) {
 	speedText.setString("SPD: " + std::to_string(static_cast<int>(speed)));
 	headingText.setString("HDG: " + std::to_string(static_cast<int>(heading)));
 	
-	
-	if (state == AircraftState::Flying)
-	{
-		stateText.setString("STATE: FLYING");
-	}
-	else if (state == AircraftState::Landing)
-	{
-		speed -= acceleration * deltaTime;
-		if (speed <= 0.f)
-		{
-			speed = 0;
-			state = AircraftState::Landed;
-			stateText.setString("STATE: LANDED");
-		}
-		else
-		{
-			stateText.setString("STATE: LANDING");
-		}
-
-	}
 }
 
 void Aircraft::draw(sf::RenderWindow& window) {
@@ -132,6 +143,17 @@ float Aircraft::getHeading()
 	return heading;
 }
 
+float Aircraft::getDistanceTo(sf::Vector2f targetPosition) {
+	sf::Vector2f direction = targetPosition - position;
+
+	float distance = std::sqrt(
+		direction.x * direction.x +
+		direction.y * direction.y
+	);
+
+	return distance;
+}
+
 bool Aircraft::isClicked(sf::Vector2i mousePosition) {
 	float dx = mousePosition.x - position.x;
 	float dy = mousePosition.y - position.y;
@@ -149,7 +171,7 @@ bool Aircraft::isNear(sf::Vector2f targetPosition)
 		direction.y * direction.y
 	);
 
-	return distance < 100.f;
+	return distance < 200.f;
 }
 
 
@@ -157,6 +179,7 @@ sf::Vector2f Aircraft::getDirectionTo(sf::Vector2f targetPosition) {
 	sf::Vector2f direction = targetPosition - position;
 	return direction;
 }
+
 
 std::string Aircraft::getDestination() {
 	return destination;

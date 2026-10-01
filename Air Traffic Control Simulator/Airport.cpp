@@ -11,6 +11,7 @@ Airport::Airport(std::string airportNewCode, sf::Vector2f Position) {
 	this->airportPosition = Position;
 	this->airportCode = airportNewCode;
 	this->runwayPosition = airportPosition + sf::Vector2f{ 36.f,0.f };
+	this->runwayCenter = runwayPosition + sf::Vector2f{ 10.f,60.f };
 	
 	label.setString(airportNewCode);
 	label.setCharacterSize(15);
@@ -45,3 +46,15 @@ sf::Vector2f Airport::getPosition() {
 	return airportPosition;
 }
 
+sf::Vector2f Airport::getRunwayPosition() {
+	return runwayPosition;
+}
+
+sf::Vector2f Airport::getCenterOfRunway() {
+	return runwayCenter;
+}
+
+float Airport::getRunwayHeading()
+{
+	return runwayHeading;
+}

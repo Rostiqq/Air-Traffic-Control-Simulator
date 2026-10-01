@@ -57,17 +57,25 @@ int main() {
 			}
 		}
 
+		std::cout << "AIRPORT1: "
+			<< airport1.getCenterOfRunway().x << " "
+			<< airport1.getCenterOfRunway().y << '\n';
+
+		std::cout << "AIRPORT2: "
+			<< airport2.getCenterOfRunway().x << " "
+			<< airport2.getCenterOfRunway().y << '\n';
+
 		for (int i = 0; i < aircrafts.size(); i++)
 		{
 			if (i == selectedAircraft)
 			{
 				if (aircrafts[i].getDestination() == "LZIB")
 				{
-					aircrafts[i].update(deltaTime, airport1.getPosition());
+					aircrafts[i].update(deltaTime, airport1.getRunwayHeading(),airport1.getCenterOfRunway());
 				}
 				else if (aircrafts[i].getDestination() == "LZIT")
 				{
-					aircrafts[i].update(deltaTime, airport2.getPosition());
+					aircrafts[i].update(deltaTime, airport2.getRunwayHeading(),airport2.getCenterOfRunway());
 				}
 			}
 

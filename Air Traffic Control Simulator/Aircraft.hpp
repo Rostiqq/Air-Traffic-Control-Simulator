@@ -15,12 +15,13 @@ class Aircraft
 public:
 	Aircraft(const std::string& newCallsign, sf::Vector2f position);
 
-	void update(float deltaTime, sf::Vector2f targetPosition);
+	void update(float deltaTime,float runwayHeading,sf::Vector2f runwayCenter);
 	void draw(sf::RenderWindow& window);
 	void setDestination(const std::string& newDestination);
 
 	float getSpeed();
 	float getHeading();
+	float getDistanceTo(sf::Vector2f targetPosition);
 
 	bool isClicked(sf::Vector2i mousePosition);
 	bool isNear(sf::Vector2f targetPosition);
@@ -38,6 +39,8 @@ private:
 	float turnSpeed = 60.f;
 	float acceleration = 30.f;
 	float maxSpeed = 200.f;
+	float landingStartSpeed = 0.f;
+	float landingStartDistance = 0.f;
 
 	std::string callsign = "NO123";
 	std::string destination = "";
