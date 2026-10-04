@@ -5,18 +5,41 @@
 #include <cmath>
 #include <numbers>
 
-Aircraft::Aircraft(const std::string& newCallsign,sf::Vector2f position) : label(font) {
+namespace
+{
+	const sf::Color textMain(220, 230, 235);
+	const sf::Color textSecondary(145, 160, 175);
+	const sf::Color callsignColor(100, 220, 140);
+
+	const sf::Color flyingColor(220, 230, 235);
+	const sf::Color landingColor(255, 200, 70);
+	const sf::Color landedColor(100, 220, 140);
+}
+
+Aircraft::Aircraft(const std::string& newCallsign, sf::Vector2f position) : label(font) {
 	if (!font.openFromFile("GeistMono-Regular.ttf"))
 	{
 		std::cout << "Font sa nepodarilo nacitat!\n";
 	}
 
-	
-	label.setCharacterSize(15);
-	speedText.setCharacterSize(12);
-	headingText.setCharacterSize(12);
+	label.setCharacterSize(13);
+	speedText.setCharacterSize(10);
+	headingText.setCharacterSize(10);
 	destinationText.setCharacterSize(10);
 	stateText.setCharacterSize(10);
+	heightText.setCharacterSize(10);
+	tcasWarningText.setCharacterSize(12);
+
+	tcasWarningText.setFillColor(sf::Color::Red);
+	label.setFillColor(callsignColor);
+	speedText.setFillColor(textSecondary);
+	headingText.setFillColor(textSecondary);
+	heightText.setFillColor(textSecondary);
+	destinationText.setFillColor(textSecondary);
+	stateText.setFillColor(textMain);
+	shapeAircraft.setFillColor(sf::Color::White);
+
+	shapeAircraft.setOrigin({ 3.f, 3.f });
 
 	this->callsign = newCallsign;
 	label.setString(newCallsign);
@@ -24,7 +47,7 @@ Aircraft::Aircraft(const std::string& newCallsign,sf::Vector2f position) : label
 }
 
 void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCenter) 
-{
+{	
 	float targetHeading = 0.f;
 	if (state == AircraftState::Landed)
 	{
@@ -49,6 +72,7 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 	if (state == AircraftState::Flying)
 	{
 		stateText.setString("STATE: FLYING");
+		stateText.setFillColor(flyingColor);
 	}
 	else if (state == AircraftState::Landing)
 	{
@@ -56,7 +80,7 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 		float ratio = distance / landingStartDistance;
 		speed = landingStartSpeed * ratio;
 
-		const float minSpeed = 2.f;
+		const float minSpeed = 3.5;
 		if (speed < minSpeed && distance > 5.f)
 			speed = minSpeed;
 
@@ -66,10 +90,12 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 			speed = 0.f;
 			state = AircraftState::Landed;
 			stateText.setString("STATE: LANDED");
+			stateText.setFillColor(landedColor);
 		}
 		else
 		{
 			stateText.setString("STATE: LANDING");
+			stateText.setFillColor(landingColor);
 		}
 	}
 	float currentHeading = getHeading();
@@ -81,15 +107,36 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 	if (difference < -180.f)
 		difference += 360.f;
 
-
-
-
-	if (difference > 0)
-		heading += turnSpeed * deltaTime;
-	else if (difference < 0)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 	{
 		heading -= turnSpeed * deltaTime;
+
+		if (heading <= 0.f)
+		{
+			heading += 360.f;
+		}
+
 	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+	{
+		heading += turnSpeed * deltaTime;
+
+		if (heading >= 360.f)
+		{
+			heading = 0.f;
+		}
+
+	}
+
+
+
+	//if (difference > 0)
+	//	heading += turnSpeed * deltaTime;
+	//else if (difference < 0)
+	//{
+	//	heading -= turnSpeed * deltaTime;
+	//}
 	
 	if (heading >= 360.f)
 	{
@@ -99,6 +146,27 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 	{
 		heading += 360.f;
 	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+	{
+		speed += acceleration * deltaTime;
+
+		if (speed >= maxSpeed)
+		{
+			speed = maxSpeed;
+		}
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+	{
+		speed -= acceleration * deltaTime;
+
+		if (speed <= 0.f)
+		{
+			speed = 0.f;
+		}
+	}
+
 
 	float radians = heading * std::numbers::pi_v<float> / 180.f;
 
@@ -117,8 +185,10 @@ void Aircraft::draw(sf::RenderWindow& window) {
 	headingText.setPosition(position + headingOffset);
 	destinationText.setPosition(position + destinationOffset);
 	stateText.setPosition(position + stateOffset);
+	heightText.setPosition(position + altitudeOffset);
+	tcasWarningText.setPosition(position + tcasWarningOffset);
 
-	shapeAircraft.setFillColor(sf::Color::White);
+	heightText.setString("ALT: " + std::to_string(altitude) + " ft");
 
 	window.draw(shapeAircraft);
 	window.draw(label);
@@ -126,11 +196,17 @@ void Aircraft::draw(sf::RenderWindow& window) {
 	window.draw(headingText);
 	window.draw(destinationText);
 	window.draw(stateText);
+	window.draw(heightText);
+	window.draw(tcasWarningText);
 }
 
 void Aircraft::setDestination(const std::string& newDestination) {
 	destination = newDestination;
 	destinationText.setString("DEST: " + destination);
+}
+
+void Aircraft::setTCASWarning(bool warning) {
+	tcasWarningText.setString(warning ? "TCAS WARNING" : "");
 }
 
 float Aircraft::getSpeed()
@@ -174,13 +250,29 @@ bool Aircraft::isNear(sf::Vector2f targetPosition)
 	return distance < 200.f;
 }
 
+bool Aircraft::isTooClose(const Aircraft& other) {
+	float dx = position.x - other.position.x;
+	float dy = position.y - other.position.y;
+
+	float distance = std::sqrt(dx * dx + dy * dy);
+
+	return distance < 200.f;
+}
 
 sf::Vector2f Aircraft::getDirectionTo(sf::Vector2f targetPosition) {
 	sf::Vector2f direction = targetPosition - position;
 	return direction;
 }
 
+sf::Vector2f Aircraft::getPosition() {
+	return position;
+}
+
 
 std::string Aircraft::getDestination() {
 	return destination;
+}
+
+int Aircraft::getAltitude() {
+	return altitude;
 }

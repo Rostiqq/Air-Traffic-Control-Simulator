@@ -57,13 +57,29 @@ int main() {
 			}
 		}
 
-		std::cout << "AIRPORT1: "
-			<< airport1.getCenterOfRunway().x << " "
-			<< airport1.getCenterOfRunway().y << '\n';
+		for (auto& aircraft : aircrafts)
+		{
+			aircraft.setTCASWarning(false);
+		}
 
-		std::cout << "AIRPORT2: "
-			<< airport2.getCenterOfRunway().x << " "
-			<< airport2.getCenterOfRunway().y << '\n';
+		for (size_t i = 0; i < aircrafts.size(); i++)
+		{
+			for (size_t j = i + 1; j < aircrafts.size(); j++)
+			{
+				if (aircrafts[i].isTooClose(aircrafts[j]))
+				{
+					int altitudeDifference = std::abs(aircrafts[i].getAltitude() - aircrafts[j].getAltitude());
+
+					if (altitudeDifference < 1000)
+					{
+						aircrafts[i].setTCASWarning(true);
+						aircrafts[j].setTCASWarning(true);
+					}
+				}
+			}
+		}
+
+
 
 		for (int i = 0; i < aircrafts.size(); i++)
 		{
