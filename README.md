@@ -9,12 +9,12 @@ A 2D air traffic control simulator written in C++ with SFML 3. Follow aircraft o
 ## Preview
 
 <div align="center">
-  <img src="assets/preview.png" alt="Simulator overview showing aircraft and airports" width="800">
+  <img src="Air%20Traffic%20Control%20Simulator/assets/preview.png" alt="Simulator overview showing aircraft and airports" width="800">
   <p><em>Simulator overview with sample aircraft and the LZIB and LZIT airports.</em></p>
 </div>
 
 <div align="center">
-  <img src="assets/tcas-warning.png" alt="Aircraft displaying a TCAS warning" width="500">
+  <img src="Air%20Traffic%20Control%20Simulator/assets/tcas-warning.png" alt="Aircraft displaying a TCAS warning" width="500">
   <p><em>Aircraft separation warning shown when the sample traffic is too close.</em></p>
 </div>
 
