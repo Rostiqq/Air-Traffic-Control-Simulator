@@ -59,21 +59,33 @@ int main() {
 
 		for (auto& aircraft : aircrafts)
 		{
-			aircraft.setTCASWarning(false);
+			aircraft.setTCASLevel(TCASLevel::Clear);
 		}
 
 		for (size_t i = 0; i < aircrafts.size(); i++)
 		{
 			for (size_t j = i + 1; j < aircrafts.size(); j++)
 			{
+				float distance = aircrafts[i].getDistanceTo(aircrafts[j].getPosition());
+
 				if (aircrafts[i].isTooClose(aircrafts[j]))
 				{
 					int altitudeDifference = std::abs(aircrafts[i].getAltitude() - aircrafts[j].getAltitude());
 
-					if (altitudeDifference < 1000)
+					if (distance < 20 && altitudeDifference < 500)
 					{
-						aircrafts[i].setTCASWarning(true);
-						aircrafts[j].setTCASWarning(true);
+						aircrafts[i].setTCASLevel(TCASLevel::Collision);
+						aircrafts[j].setTCASLevel(TCASLevel::Collision);
+					}
+					else if (distance < 50 && altitudeDifference < 500)
+					{
+						aircrafts[i].setTCASLevel(TCASLevel::RA);
+						aircrafts[j].setTCASLevel(TCASLevel::RA);
+					}
+					else if (distance < 100 && altitudeDifference < 1000)
+					{
+						aircrafts[i].setTCASLevel(TCASLevel::TA);
+						aircrafts[j].setTCASLevel(TCASLevel::TA);
 					}
 				}
 			}

@@ -9,6 +9,14 @@ enum class AircraftState {
 	Landing
 };
 
+enum class TCASLevel
+{
+	Clear,
+	Traffic,
+	TA,
+	RA,
+	Collision
+};
 
 class Aircraft
 {
@@ -18,7 +26,7 @@ public:
 	void update(float deltaTime, float runwayHeading, sf::Vector2f runwayCenter);
 	void draw(sf::RenderWindow& window);
 	void setDestination(const std::string& newDestination);
-	void setTCASWarning(bool warning);
+	void setTCASLevel(TCASLevel level);
 
 	int getAltitude();
 
@@ -37,6 +45,7 @@ public:
 
 private:
 	AircraftState state = AircraftState::Flying;
+	TCASLevel tcasLevel = TCASLevel::Clear;
 
 	int altitude = 5000;
 	int targetAltitude = 8000;

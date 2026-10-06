@@ -179,6 +179,25 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 }
 
 void Aircraft::draw(sf::RenderWindow& window) {
+	switch (tcasLevel)
+	{
+	case TCASLevel::Clear:
+		tcasWarningText.setString("");
+		break;
+
+	case TCASLevel::TA:
+		tcasWarningText.setString("TCAS: TRAFFIC");
+		break;
+
+	case TCASLevel::RA:
+		tcasWarningText.setString("TCAS: RA");
+		break;
+
+	case TCASLevel::Collision:
+		tcasWarningText.setString("TCAS: COLLISION");
+		break;
+	}
+	
 	shapeAircraft.setPosition(position);
 	label.setPosition(position + textOffset);
 	speedText.setPosition(position + speedOffset);
@@ -205,8 +224,9 @@ void Aircraft::setDestination(const std::string& newDestination) {
 	destinationText.setString("DEST: " + destination);
 }
 
-void Aircraft::setTCASWarning(bool warning) {
-	tcasWarningText.setString(warning ? "TCAS WARNING" : "");
+void Aircraft::setTCASLevel(TCASLevel level)
+{
+	tcasLevel = level;
 }
 
 float Aircraft::getSpeed()
