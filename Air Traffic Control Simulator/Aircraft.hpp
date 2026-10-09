@@ -18,15 +18,23 @@ enum class TCASLevel
 	Collision
 };
 
+enum class TCASResolution {
+	None,
+	Climb,
+	Descend
+};
+
 class Aircraft
 {
 public:
 	Aircraft(const std::string& newCallsign, sf::Vector2f position);
 
-	void update(float deltaTime, float runwayHeading, sf::Vector2f runwayCenter);
+	void update(float deltaTime, float runwayHeading, sf::Vector2f runwayCenter, bool isSelected);
 	void draw(sf::RenderWindow& window);
 	void setDestination(const std::string& newDestination);
 	void setTCASLevel(TCASLevel level);
+	void setTCASResolution(TCASResolution resolution);
+	void setTargetAltitude(int newTargetAltitude);
 
 	int getAltitude();
 
@@ -46,9 +54,12 @@ public:
 private:
 	AircraftState state = AircraftState::Flying;
 	TCASLevel tcasLevel = TCASLevel::Clear;
+	TCASResolution tcasResolution = TCASResolution::None;
 
 	int altitude = 5000;
 	int targetAltitude = 8000;
+	int climbRate = 500;
+	int descentRate = 500;
 
 	float heading = 0.f;
 	float speed = 50.f;
@@ -58,6 +69,7 @@ private:
 	float maxSpeed = 200.f;
 	float landingStartSpeed = 0.f;
 	float landingStartDistance = 0.f;
+
 
 	std::string callsign = "NO123";
 	std::string destination = "";

@@ -22,7 +22,7 @@ int main() {
 	aircrafts.emplace_back("BA875", sf::Vector2f{ 1000.f,600.f });
 
 	aircrafts[0].setDestination("LZIB");
-	aircrafts[1].setDestination("");
+	aircrafts[1].setDestination("LZIB");
 	aircrafts[2].setDestination("LZIT");
 
 	int selectedAircraft = 0;
@@ -81,6 +81,17 @@ int main() {
 					{
 						aircrafts[i].setTCASLevel(TCASLevel::RA);
 						aircrafts[j].setTCASLevel(TCASLevel::RA);
+
+						if (aircrafts[i].getAltitude() >= aircrafts[j].getAltitude())
+						{
+							aircrafts[i].setTCASResolution(TCASResolution::Climb);
+							aircrafts[j].setTCASResolution(TCASResolution::Descend);
+						}
+						else
+						{
+							aircrafts[i].setTCASResolution(TCASResolution::Descend);
+							aircrafts[j].setTCASResolution(TCASResolution::Climb);
+						}
 					}
 					else if (distance < 100 && altitudeDifference < 1000)
 					{
@@ -95,16 +106,25 @@ int main() {
 
 		for (int i = 0; i < aircrafts.size(); i++)
 		{
-			if (i == selectedAircraft)
+			bool isSelected = (i == selectedAircraft);
+
+			if (aircrafts[i].getDestination() == "LZIB")
 			{
-				if (aircrafts[i].getDestination() == "LZIB")
-				{
-					aircrafts[i].update(deltaTime, airport1.getRunwayHeading(),airport1.getCenterOfRunway());
-				}
-				else if (aircrafts[i].getDestination() == "LZIT")
-				{
-					aircrafts[i].update(deltaTime, airport2.getRunwayHeading(),airport2.getCenterOfRunway());
-				}
+				aircrafts[i].update(
+					deltaTime,
+					airport1.getRunwayHeading(),
+					airport1.getCenterOfRunway(),
+					isSelected
+				);
+			}
+			else if (aircrafts[i].getDestination() == "LZIT")
+			{
+				aircrafts[i].update(
+					deltaTime,
+					airport2.getRunwayHeading(),
+					airport2.getCenterOfRunway(),
+					isSelected
+				);
 			}
 
 			aircrafts[i].draw(window);

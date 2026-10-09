@@ -46,14 +46,32 @@ Aircraft::Aircraft(const std::string& newCallsign, sf::Vector2f position) : labe
 	this->position = position;
 }
 
-void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCenter) 
+void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCenter, bool isSelected)
 {	
 	float targetHeading = 0.f;
 	if (state == AircraftState::Landed)
 	{
 		return;
 	}
-	
+	if (tcasResolution != TCASResolution::None)
+	{
+		if (altitude < targetAltitude)
+		{
+			altitude += climbRate * deltaTime;
+			if (altitude > targetAltitude)
+				altitude = targetAltitude;
+		}
+		else if (altitude > targetAltitude)
+		{
+			altitude -= descentRate * deltaTime;
+			if (altitude < targetAltitude)
+				altitude = targetAltitude;
+		}
+
+		if (altitude == targetAltitude)
+			tcasResolution = TCASResolution::None;
+	}
+
 	if (state == AircraftState::Flying && isNear(runwayCenter))
 	{
 		state = AircraftState::Landing;
@@ -107,36 +125,43 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 	if (difference < -180.f)
 		difference += 360.f;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+	if (isSelected)
 	{
-		heading -= turnSpeed * deltaTime;
 
-		if (heading <= 0.f)
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		{
-			heading += 360.f;
+			heading -= turnSpeed * deltaTime;
+
+			if (heading <= 0.f)
+			{
+				heading += 360.f;
+			}
+
 		}
 
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-	{
-		heading += turnSpeed * deltaTime;
-
-		if (heading >= 360.f)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 		{
-			heading = 0.f;
-		}
+			heading += turnSpeed * deltaTime;
 
+			if (heading >= 360.f)
+			{
+				heading = 0.f;
+			}
+
+		}
 	}
 
 
+	if (!isSelected)
+	{
+		float step = turnSpeed * deltaTime;
 
-	//if (difference > 0)
-	//	heading += turnSpeed * deltaTime;
-	//else if (difference < 0)
-	//{
-	//	heading -= turnSpeed * deltaTime;
-	//}
+		if (std::abs(difference) <= step)
+			heading = targetHeading;
+		else
+			heading += (difference > 0.f ? step : -step);
+	}
 	
 	if (heading >= 360.f)
 	{
@@ -207,7 +232,7 @@ void Aircraft::draw(sf::RenderWindow& window) {
 	heightText.setPosition(position + altitudeOffset);
 	tcasWarningText.setPosition(position + tcasWarningOffset);
 
-	heightText.setString("ALT: " + std::to_string(altitude) + " ft");
+	heightText.setString("ALT: " + std::to_string(static_cast<int>(altitude)) + " ft");
 
 	window.draw(shapeAircraft);
 	window.draw(label);
@@ -227,6 +252,18 @@ void Aircraft::setDestination(const std::string& newDestination) {
 void Aircraft::setTCASLevel(TCASLevel level)
 {
 	tcasLevel = level;
+}
+
+void Aircraft::setTCASResolution(TCASResolution resolution)
+{
+	if (resolution == TCASResolution::None) return;
+	if (tcasResolution != TCASResolution::None) return;
+
+	tcasResolution = resolution;
+	targetAltitude = altitude + (resolution == TCASResolution::Climb ? 1000.f : -1000.f);
+}
+void Aircraft::setTargetAltitude(int newTargetAltitude) {
+	targetAltitude = newTargetAltitude;
 }
 
 float Aircraft::getSpeed()
