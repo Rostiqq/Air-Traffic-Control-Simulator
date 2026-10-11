@@ -56,10 +56,10 @@ private:
 	TCASLevel tcasLevel = TCASLevel::Clear;
 	TCASResolution tcasResolution = TCASResolution::None;
 
-	int altitude = 5000;
-	int targetAltitude = 8000;
-	int climbRate = 500;
-	int descentRate = 500;
+	float altitude = 5000.f;
+	float targetAltitude = 8000.f;
+	float climbRate = 500.f;
+	float descentRate = 500.f;
 
 	float heading = 0.f;
 	float speed = 50.f;

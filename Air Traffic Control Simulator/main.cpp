@@ -10,7 +10,6 @@ int main() {
 
 	sf::RenderWindow window(sf::VideoMode({ 1200, 800 }), "ATC Simulator", sf::Style::Titlebar);
 	sf::Clock clock;
-	sf::Vector2i mousePosition;
 
 	std::vector<Aircraft> aircrafts;
 	Airport airport1("LZIB", { 200.f,600.f });
@@ -38,24 +37,21 @@ int main() {
 				window.close();
 
 			if (const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>()) {
-				
 				if (mouse->button == sf::Mouse::Button::Left)
 				{
-					mousePosition = mouse->position;
+					for (size_t i = 0; i < aircrafts.size(); ++i)
+					{
+						if (aircrafts[i].isClicked(mouse->position))
+						{
+							selectedAircraft = static_cast<int>(i);
+							break;
+						}
+					}
 				}
 			}
 		}
 		
 		window.clear(sf::Color(10, 15, 25));
-
-		
-		for (int i = 0; i < aircrafts.size(); i++)
-		{
-			if (aircrafts[i].isClicked(mousePosition))
-			{
-				selectedAircraft = i;
-			}
-		}
 
 		for (auto& aircraft : aircrafts)
 		{
@@ -68,7 +64,7 @@ int main() {
 			{
 				float distance = aircrafts[i].getDistanceTo(aircrafts[j].getPosition());
 
-				if (aircrafts[i].isTooClose(aircrafts[j]))
+				if (distance < 200.f)
 				{
 					int altitudeDifference = std::abs(aircrafts[i].getAltitude() - aircrafts[j].getAltitude());
 
@@ -120,6 +116,7 @@ int main() {
 			else if (aircrafts[i].getDestination() == "LZIT")
 			{
 				aircrafts[i].update(
+
 					deltaTime,
 					airport2.getRunwayHeading(),
 					airport2.getCenterOfRunway(),

@@ -68,8 +68,11 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 				altitude = targetAltitude;
 		}
 
-		if (altitude == targetAltitude)
+		if (std::abs(altitude - targetAltitude) < 1.f)
+		{
+			altitude = targetAltitude;
 			tcasResolution = TCASResolution::None;
+		}
 	}
 
 	if (state == AircraftState::Flying && isNear(runwayCenter))
@@ -127,8 +130,6 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 
 	if (isSelected)
 	{
-
-
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		{
 			heading -= turnSpeed * deltaTime;
@@ -137,7 +138,6 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 			{
 				heading += 360.f;
 			}
-
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
@@ -148,12 +148,29 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 			{
 				heading = 0.f;
 			}
+		}
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+		{
+			speed += acceleration * deltaTime;
+
+			if (speed >= maxSpeed)
+			{
+				speed = maxSpeed;
+			}
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+		{
+			speed -= acceleration * deltaTime;
+
+			if (speed <= 0.f)
+			{
+				speed = 0.f;
+			}
 		}
 	}
-
-
-	if (!isSelected)
+	else
 	{
 		float step = turnSpeed * deltaTime;
 
@@ -170,26 +187,6 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 	else if (heading < 0.f)
 	{
 		heading += 360.f;
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-	{
-		speed += acceleration * deltaTime;
-
-		if (speed >= maxSpeed)
-		{
-			speed = maxSpeed;
-		}
-	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-	{
-		speed -= acceleration * deltaTime;
-
-		if (speed <= 0.f)
-		{
-			speed = 0.f;
-		}
 	}
 
 
