@@ -48,7 +48,6 @@ Aircraft::Aircraft(const std::string& newCallsign, sf::Vector2f position) : labe
 
 void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCenter, bool isSelected)
 {	
-	float targetHeading = 0.f;
 	if (state == AircraftState::Landed)
 	{
 		return;
@@ -83,13 +82,18 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 	}
 
 
-	sf::Vector2f directionToTarget = getDirectionTo(runwayCenter);
+	if (!isManualControl)
+	{
+		sf::Vector2f directionToTarget = getDirectionTo(runwayCenter);
+		float angle = std::atan2(directionToTarget.x, -directionToTarget.y);
+		targetHeading = angle * 180.f / std::numbers::pi_v<float>;
 
-	float angle = std::atan2(directionToTarget.x, -directionToTarget.y);
-	targetHeading = angle * 180.f / std::numbers::pi_v<float>;
+		if (targetHeading < 0.f)
+			targetHeading += 360.f;
+	}
 
-	if (targetHeading < 0.f)
-		targetHeading += 360.f;
+	
+	
 	if (state == AircraftState::Flying)
 	{
 		stateText.setString("STATE: FLYING");
@@ -101,7 +105,7 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 		float ratio = distance / landingStartDistance;
 		speed = landingStartSpeed * ratio;
 
-		const float minSpeed = 3.5;
+		const float minSpeed = 3.5f;
 		if (speed < minSpeed && distance > 5.f)
 			speed = minSpeed;
 
@@ -119,35 +123,28 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 			stateText.setFillColor(landingColor);
 		}
 	}
-	float currentHeading = getHeading();
-	float difference = targetHeading - currentHeading;
-
-	if (difference > 180.f)
-		difference -= 360.f;
-
-	if (difference < -180.f)
-		difference += 360.f;
 
 	if (isSelected)
 	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::R))
+		{
+			isManualControl = false;
+		}
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		{
-			heading -= turnSpeed * deltaTime;
-
-			if (heading <= 0.f)
-			{
-				heading += 360.f;
-			}
+			isManualControl = true;
+			targetHeading -= turnSpeed * deltaTime;
+			if (targetHeading < 0.f)
+				targetHeading += 360.f;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 		{
-			heading += turnSpeed * deltaTime;
-
-			if (heading >= 360.f)
-			{
-				heading = 0.f;
-			}
+			isManualControl = true;
+			targetHeading += turnSpeed * deltaTime;
+			if (targetHeading >= 360.f)
+				targetHeading -= 360.f;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
@@ -170,16 +167,20 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 			}
 		}
 	}
-	else
-	{
-		float step = turnSpeed * deltaTime;
-
-		if (std::abs(difference) <= step)
-			heading = targetHeading;
-		else
-			heading += (difference > 0.f ? step : -step);
-	}
 	
+	float difference = targetHeading - heading;
+	if (difference > 180.f)
+		difference -= 360.f;
+
+	if (difference < -180.f)
+		difference += 360.f;
+	float step = turnSpeed * deltaTime;
+
+	if (std::abs(difference) <= step)
+		heading = targetHeading;
+	else
+		heading += (difference > 0.f ? step : -step);
+
 	if (heading >= 360.f)
 	{
 		heading -= 360.f;
@@ -201,6 +202,23 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 }
 
 void Aircraft::draw(sf::RenderWindow& window) {
+
+	if (state != AircraftState::Landed)
+	{
+		float radians = heading * std::numbers::pi_v<float> / 180.f;
+		sf::Vector2f direction(std::sin(radians), -std::cos(radians));
+
+		float lookaheadSeconds = 5.f;
+		sf::Vector2f vectorEnd = position + direction * (speed * lookaheadSeconds);
+
+		sf::Vertex line[] = {
+			sf::Vertex{position, sf::Color(100, 220, 140, 180)},
+			sf::Vertex{vectorEnd, sf::Color(100, 220, 140, 40)}
+		};
+
+		window.draw(line, 2, sf::PrimitiveType::Lines);
+	}
+
 	switch (tcasLevel)
 	{
 	case TCASLevel::Clear:
@@ -259,7 +277,7 @@ void Aircraft::setTCASResolution(TCASResolution resolution)
 	tcasResolution = resolution;
 	targetAltitude = altitude + (resolution == TCASResolution::Climb ? 1000.f : -1000.f);
 }
-void Aircraft::setTargetAltitude(int newTargetAltitude) {
+void Aircraft::setTargetAltitude(float newTargetAltitude) {
 	targetAltitude = newTargetAltitude;
 }
 
@@ -271,6 +289,10 @@ float Aircraft::getSpeed()
 float Aircraft::getHeading()
 {
 	return heading;
+}
+
+float Aircraft::getAltitude() {
+	return altitude;
 }
 
 float Aircraft::getDistanceTo(sf::Vector2f targetPosition) {
@@ -287,7 +309,7 @@ float Aircraft::getDistanceTo(sf::Vector2f targetPosition) {
 bool Aircraft::isClicked(sf::Vector2i mousePosition) {
 	float dx = mousePosition.x - position.x;
 	float dy = mousePosition.y - position.y;
-	float different = sqrt(dx * dx + dy * dy);
+	float different = std::sqrt(dx * dx + dy * dy);
 	
 	return different <= 10.f;
 }
@@ -325,8 +347,4 @@ sf::Vector2f Aircraft::getPosition() {
 
 std::string Aircraft::getDestination() {
 	return destination;
-}
-
-int Aircraft::getAltitude() {
-	return altitude;
 }

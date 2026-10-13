@@ -34,13 +34,12 @@ public:
 	void setDestination(const std::string& newDestination);
 	void setTCASLevel(TCASLevel level);
 	void setTCASResolution(TCASResolution resolution);
-	void setTargetAltitude(int newTargetAltitude);
-
-	int getAltitude();
+	void setTargetAltitude(float newTargetAltitude);
 
 	float getSpeed();
 	float getHeading();
 	float getDistanceTo(sf::Vector2f targetPosition);
+	float getAltitude();
 
 	bool isClicked(sf::Vector2i mousePosition);
 	bool isNear(sf::Vector2f targetPosition);
@@ -57,9 +56,12 @@ private:
 	TCASResolution tcasResolution = TCASResolution::None;
 
 	float altitude = 5000.f;
-	float targetAltitude = 8000.f;
 	float climbRate = 500.f;
 	float descentRate = 500.f;
+
+	float targetHeading = 0.f;
+	float targetAltitude = 8000.f;
+	float targetSpeed = 200.f;
 
 	float heading = 0.f;
 	float speed = 50.f;
@@ -70,6 +72,7 @@ private:
 	float landingStartSpeed = 0.f;
 	float landingStartDistance = 0.f;
 
+	bool isManualControl = false;
 
 	std::string callsign = "NO123";
 	std::string destination = "";
