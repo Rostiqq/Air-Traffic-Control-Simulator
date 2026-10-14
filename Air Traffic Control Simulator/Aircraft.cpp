@@ -44,6 +44,8 @@ Aircraft::Aircraft(const std::string& newCallsign, sf::Vector2f position) : labe
 	this->callsign = newCallsign;
 	label.setString(newCallsign);
 	this->position = position;
+	targetAltitude = altitude;
+	targetSpeed = speed;
 }
 
 void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCenter, bool isSelected)
@@ -52,7 +54,7 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 	{
 		return;
 	}
-	if (tcasResolution != TCASResolution::None)
+	if (altitude != targetAltitude)
 	{
 		if (altitude < targetAltitude)
 		{
@@ -74,7 +76,7 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 		}
 	}
 
-	if (state == AircraftState::Flying && isNear(runwayCenter))
+	if (!isManualControl && state == AircraftState::Flying && isNear(runwayCenter))
 	{
 		state = AircraftState::Landing;
 		landingStartSpeed = speed;
@@ -98,6 +100,19 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 	{
 		stateText.setString("STATE: FLYING");
 		stateText.setFillColor(flyingColor);
+
+		if (speed < targetSpeed)
+		{
+			speed += acceleration * deltaTime;
+			if (speed > targetSpeed)
+				speed = targetSpeed;
+		}
+		else if (speed > targetSpeed)
+		{
+			speed -= acceleration * deltaTime;
+			if (speed < targetSpeed)
+				speed = targetSpeed;
+		}
 	}
 	else if (state == AircraftState::Landing)
 	{
@@ -131,6 +146,24 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 			isManualControl = false;
 		}
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
+		{
+			targetAltitude += climbRate * deltaTime;
+			if (targetAltitude > 35000.f)
+			{
+				targetAltitude = 35000.f;
+			}
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
+		{
+			targetAltitude -= climbRate * deltaTime;
+			if (targetAltitude < 1000.f)
+			{
+				targetAltitude = 1000.f;
+			}
+		}
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		{
 			isManualControl = true;
@@ -149,22 +182,23 @@ void Aircraft::update(float deltaTime,float runwayHeading, sf::Vector2f runwayCe
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 		{
-			speed += acceleration * deltaTime;
-
-			if (speed >= maxSpeed)
-			{
-				speed = maxSpeed;
-			}
+			targetSpeed += acceleration * deltaTime;
+			if (targetSpeed > maxSpeed)
+				targetSpeed = maxSpeed;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 		{
-			speed -= acceleration * deltaTime;
-
-			if (speed <= 0.f)
-			{
-				speed = 0.f;
-			}
+			targetSpeed -= acceleration * deltaTime;
+			if (targetSpeed < 0.f)
+				targetSpeed = 0.f;
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G))
+		{
+			state = AircraftState::Flying;
+			targetSpeed = 70.f;
+			isManualControl = true;
+			targetAltitude = 3000.f;
 		}
 	}
 	
@@ -247,7 +281,16 @@ void Aircraft::draw(sf::RenderWindow& window) {
 	heightText.setPosition(position + altitudeOffset);
 	tcasWarningText.setPosition(position + tcasWarningOffset);
 
-	heightText.setString("ALT: " + std::to_string(static_cast<int>(altitude)) + " ft");
+	if (std::abs(altitude - targetAltitude) > 10.f)
+	{
+		heightText.setString("ALT: " + std::to_string(static_cast<int>(altitude)) +
+			" -> " + std::to_string(static_cast<int>(targetAltitude)));
+	}
+	else
+	{
+		heightText.setString("ALT: " + std::to_string(static_cast<int>(altitude)) + " ft");
+	}
+
 
 	window.draw(shapeAircraft);
 	window.draw(label);
