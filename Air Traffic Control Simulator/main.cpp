@@ -5,6 +5,7 @@
 #include <SFML/Window.hpp>
 #include "Aircraft.hpp"
 #include "Airport.hpp"
+#include "TrafficSpawner.hpp"
 
 int main() {
 
@@ -15,7 +16,7 @@ int main() {
 	Airport airport1("LZIB", { 200.f,600.f });
 	Airport airport2("LZIT", { 900.f,150.f });
  
-	aircrafts.reserve(3);
+	aircrafts.reserve(100);
 	aircrafts.emplace_back("MA345", sf::Vector2f{ 300.f,400.f });
 	aircrafts.emplace_back("NO123", sf::Vector2f{ 800.f,200.f });
 	aircrafts.emplace_back("BA875", sf::Vector2f{ 1000.f,600.f });
@@ -26,10 +27,12 @@ int main() {
 
 	int selectedAircraft = 0;
 
+	TrafficSpawner spawner(10.f);
 
 	while (window.isOpen())
 	{
 		float deltaTime = clock.restart().asSeconds();
+		spawner.update(deltaTime,aircrafts);
 
 		while (const std::optional event = window.pollEvent())
 		{

@@ -27,12 +27,18 @@
     <ClCompile Include="Airport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TimerSpawner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Aircraft.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Airport.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TrafficSpawner.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

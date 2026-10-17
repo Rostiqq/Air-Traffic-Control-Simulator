@@ -148,10 +148,12 @@
     <ClCompile Include="Aircraft.cpp" />
     <ClCompile Include="Airport.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TimerSpawner.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Aircraft.hpp" />
     <ClInclude Include="Airport.hpp" />
+    <ClInclude Include="TrafficSpawner.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="..\..\..\..\Skola\Web\Hlavny web\FONTS\GeistMono-Regular.ttf" />
